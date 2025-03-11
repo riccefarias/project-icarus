@@ -27,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Forçar HTTPS em produção
+        if (config('app.env') !== 'local') {
+            \URL::forceScheme('https');
+        }
+        
         Model::unguard();
         
         // Define Super Admin (usuário com role 'admin')

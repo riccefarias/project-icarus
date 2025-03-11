@@ -57,16 +57,56 @@ class VehiclesRelationManager extends RelationManager
                 
                 Forms\Components\Section::make('Informações do Rastreador')
                     ->schema([
-                        Forms\Components\TextInput::make('device_id')
-                            ->label('ID do Dispositivo')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('sim_card')
-                            ->label('SIM Card')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('phone_number')
-                            ->label('Número do SIM')
-                            ->tel()
-                            ->maxLength(255),
+                        Forms\Components\Select::make('equipment_id')
+                            ->label('Equipamento')
+                            ->relationship('equipment', 'serial_number')
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->createOptionForm([
+                                Forms\Components\Section::make('Informações do Equipamento')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('serial_number')
+                                            ->label('Número de Série')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->unique(),
+                                        Forms\Components\TextInput::make('model')
+                                            ->label('Modelo')
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('brand')
+                                            ->label('Marca')
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\Select::make('status')
+                                            ->label('Status')
+                                            ->options([
+                                                'in_stock' => 'Em Estoque',
+                                                'with_technician' => 'Com Técnico',
+                                                'with_customer' => 'Com Cliente',
+                                                'defective' => 'Com Defeito',
+                                                'maintenance' => 'Em Manutenção'
+                                            ])
+                                            ->default('with_customer')
+                                            ->required(),
+                                    ])->columns(2),
+                                
+                                Forms\Components\Section::make('Informações do SIM')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('imei')
+                                            ->label('IMEI')
+                                            ->maxLength(255)
+                                            ->unique(),
+                                        Forms\Components\TextInput::make('phone_number')
+                                            ->label('Número de Telefone')
+                                            ->tel()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('chip_provider')
+                                            ->label('Operadora')
+                                            ->maxLength(255),
+                                    ])->columns(3),
+                            ]),
                         Forms\Components\TextInput::make('traccar_id')
                             ->label('ID no Traccar')
                             ->disabled()
@@ -93,9 +133,10 @@ class VehiclesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('brand')
                     ->label('Marca')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('device_id')
-                    ->label('ID Dispositivo')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('equipment.serial_number')
+                    ->label('Equipamento')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('active')
                     ->label('Ativo')
                     ->boolean(),

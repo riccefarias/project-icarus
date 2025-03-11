@@ -35,11 +35,6 @@ class VehicleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('customer_id')
-                    ->label('Cliente')
-                    ->options(Customer::query()->pluck('name', 'id'))
-                    ->required()
-                    ->searchable(),
                     
                 Forms\Components\Section::make('Informações do Veículo')
                     ->schema([
@@ -75,6 +70,7 @@ class VehicleResource extends Resource
                             ->relationship('equipment', 'serial_number')
                             ->searchable()
                             ->preload()
+                            ->live()
                             ->createOptionForm([
                                 Forms\Components\Section::make('Informações do Equipamento')
                                     ->schema([
@@ -135,10 +131,6 @@ class VehicleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('customer.name')
-                    ->label('Cliente')
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('license_plate')
                     ->label('Placa')
                     ->searchable(),
@@ -168,10 +160,6 @@ class VehicleResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
-                Tables\Filters\SelectFilter::make('customer_id')
-                    ->label('Cliente')
-                    ->options(Customer::pluck('name', 'id'))
-                    ->searchable(),
                 Tables\Filters\SelectFilter::make('active')
                     ->label('Status')
                     ->options([
@@ -278,7 +266,7 @@ class VehicleResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // 
+            RelationManagers\EquipmentRelationManager::class,
         ];
     }
 

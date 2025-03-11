@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Filament\Pages;
+
+use App\Integrations\IntegrationsManager;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
+use Filament\Pages\Page;
+
+class TraccarSync extends Page
+{
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
+
+    protected static string $view = 'filament.pages.traccar-sync';
+    
+    protected static ?string $navigationLabel = 'Sincronizar Plataforma';
+    
+    protected static ?string $title = 'Sincronização com Plataforma de Rastreamento';
+    
+    protected static ?int $navigationSort = 96;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('sync_all')
+                ->label('Sincronizar Dados da Plataforma')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->requiresConfirmation()
+                ->action(function () {
+                    $integrationsManager = app(IntegrationsManager::class);
+                    $integrationsManager->loadIntegrations();
+                    
+                    $activeIntegration = $integrationsManager->getActiveIntegration();
+                    
+                    if ($activeIntegration && $activeIntegration->isEnabled()) {
+                        $activeIntegration->syncAllFromTracking();
+                        
+                        Notification::make()
+                            ->title('Sincronização iniciada')
+                            ->body('A sincronização com a plataforma foi iniciada. Isso pode levar algum tempo.')
+                            ->success()
+                            ->send();
+                    } else {
+                        Notification::make()
+                            ->title('Erro de sincronização')
+                            ->body('Não há integração ativa configurada. Por favor, configure uma integração primeiro.')
+                            ->danger()
+                            ->send();
+                    }
+                }),
+        ];
+    }
+}

@@ -1,0 +1,74 @@
+<x-filament-panels::page>
+    <x-filament::section>
+        <h2 class="text-xl font-bold tracking-tight">Integração com Plataforma de Rastreamento</h2>
+        
+        <p class="mt-2 text-gray-500 dark:text-gray-400">
+            O sistema Icarus possui integração com diferentes plataformas de rastreamento GPS. 
+            Esta página permite sincronizar dados entre os sistemas.
+        </p>
+        
+        <div class="mt-6 space-y-6">
+            <div class="p-6 bg-white rounded-lg shadow dark:bg-gray-800">
+                <h3 class="text-lg font-semibold">Sincronização de Dados</h3>
+                <p class="mt-2 text-gray-500 dark:text-gray-400">
+                    A sincronização com a plataforma de rastreamento acontece automaticamente quando você:
+                </p>
+                
+                <ul class="mt-4 ml-6 list-disc text-gray-500 dark:text-gray-400">
+                    <li>Cria ou edita um cliente</li>
+                    <li>Cria ou edita um veículo</li>
+                </ul>
+                
+                <p class="mt-4 text-gray-500 dark:text-gray-400">
+                    Você também pode sincronizar manualmente usando:
+                </p>
+                
+                <ul class="mt-4 ml-6 list-disc text-gray-500 dark:text-gray-400">
+                    <li>O botão "Sincronizar" em cada cliente ou veículo</li>
+                    <li>O botão "Sincronizar Dados da Plataforma" no topo desta página (para buscar todos os dados para o Icarus)</li>
+                </ul>
+            </div>
+            
+            <div class="p-6 bg-white rounded-lg shadow dark:bg-gray-800">
+                <h3 class="text-lg font-semibold">Status da Integração</h3>
+                <div class="mt-4">
+                    @php
+                        $integrationsManager = app(\App\Integrations\IntegrationsManager::class);
+                        $integrationsManager->loadIntegrations();
+                        $activeIntegration = $integrationsManager->getActiveIntegration();
+                    @endphp
+                
+                    <div class="flex items-center">
+                        <span class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">Integração Ativa:</span>
+                        @if($activeIntegration)
+                            <span class="text-sm">{{ $activeIntegration->getName() }}</span>
+                        @else
+                            <span class="text-sm">Nenhuma</span>
+                        @endif
+                    </div>
+                    
+                    <div class="mt-2 flex items-center">
+                        <span class="mr-2 text-sm font-medium text-gray-500 dark:text-gray-400">Status:</span>
+                        @if($activeIntegration && $activeIntegration->isEnabled())
+                            <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-100">
+                                Ativado
+                            </span>
+                        @else
+                            <span class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full dark:bg-red-900 dark:text-red-100">
+                                Desativado
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                
+                @if(!$activeIntegration || !$activeIntegration->isEnabled())
+                    <div class="mt-4 p-4 border border-yellow-100 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-900/30">
+                        <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                            Não há uma integração ativa configurada. Acesse a página <a href="{{ route('filament.admin.pages.integrations-manager') }}" class="underline font-medium">Integrações</a> para configurar uma plataforma de rastreamento.
+                        </p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </x-filament::section>
+</x-filament-panels::page>

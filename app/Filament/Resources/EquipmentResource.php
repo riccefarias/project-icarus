@@ -157,6 +157,7 @@ class EquipmentResource extends Resource
     {
         return [
             RelationManagers\VehiclesRelationManager::class,
+            RelationManagers\CustomersRelationManager::class,
         ];
     }
 
