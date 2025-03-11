@@ -26,12 +26,14 @@ Route::post('/update-system', [SystemController::class, 'update'])
     ->name('update-system');
     
 // Rota para visualização pública de equipamento via QR code
-Route::get('/equipment/{equipment}', function (Equipment $equipment) {
+Route::get('/equipment/{serial}', function ($serial) {
+    $equipment = Equipment::where('serial_number', $serial)->firstOrFail();
     return view('equipment.show', compact('equipment'));
 })->name('equipment.show');
 
 // Rota para download do QR code
-Route::get('/equipment/{equipment}/qrcode', function (Equipment $equipment, Request $request) {
+Route::get('/equipment/{serial}/qrcode', function ($serial, Request $request) {
+    $equipment = Equipment::where('serial_number', $serial)->firstOrFail();
     $size = $request->get('size', 200);
     return response($equipment->getQrCode($size))->header('Content-Type', 'image/svg+xml');
 })->name('equipment.qrcode');

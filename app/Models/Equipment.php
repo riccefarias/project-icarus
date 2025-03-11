@@ -129,7 +129,7 @@ class Equipment extends Model
     public function getQrCode(int $size = 200): string
     {
         // Gerando URL para página de detalhes do equipamento
-        $url = route('equipment.show', $this->id);
+        $url = route('equipment.show', $this->serial_number);
         
         // Gerando QR code
         return \SimpleSoftwareIO\QrCode\Facades\QrCode::size($size)
@@ -141,6 +141,6 @@ class Equipment extends Model
      */
     public function getShowUrlAttribute(): string
     {
-        return route('equipment.show', $this->id);
+        return route('equipment.show', $this->serial_number);
     }
 }
