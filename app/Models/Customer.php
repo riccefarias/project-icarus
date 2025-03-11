@@ -58,4 +58,12 @@ class Customer extends Model
     {
         return $this->belongsToMany(Equipment::class)->withTimestamps();
     }
+
+    /**
+     * Get the services associated with the customer.
+     */
+    public function services(): HasMany
+    {
+        return $this->hasMany(Service::class);
+    }
 }

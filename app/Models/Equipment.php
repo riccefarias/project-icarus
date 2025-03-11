@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Equipment extends Model
@@ -62,5 +63,13 @@ class Equipment extends Model
     public function customers(): BelongsToMany
     {
         return $this->belongsToMany(Customer::class)->withTimestamps();
+    }
+
+    /**
+     * Get the services associated with the equipment.
+     */
+    public function services(): HasMany
+    {
+        return $this->hasMany(Service::class);
     }
 }

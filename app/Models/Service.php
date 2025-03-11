@@ -5,10 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Vehicle extends Model
+class Service extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -18,16 +17,15 @@ class Vehicle extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'service_type',
+        'vehicle_id',
         'customer_id',
-        'license_plate',
-        'model',
-        'brand',
-        'year',
-        'color',
-        'chassis',
         'equipment_id',
-        'active',
-        'traccar_id',
+        'technician_id',
+        'scheduled_date',
+        'completion_date',
+        'status',
+        'description',
         'notes',
     ];
 
@@ -37,11 +35,12 @@ class Vehicle extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'active' => 'boolean',
+        'scheduled_date' => 'datetime',
+        'completion_date' => 'datetime',
     ];
 
     /**
-     * Get the customer that owns the vehicle.
+     * Get the customer that owns the service.
      */
     public function customer(): BelongsTo
     {
@@ -49,7 +48,15 @@ class Vehicle extends Model
     }
 
     /**
-     * Get the equipment attached to this vehicle.
+     * Get the vehicle that owns the service.
+     */
+    public function vehicle(): BelongsTo
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
+    /**
+     * Get the equipment that owns the service.
      */
     public function equipment(): BelongsTo
     {
@@ -57,10 +64,10 @@ class Vehicle extends Model
     }
 
     /**
-     * Get the services associated with the vehicle.
+     * Get the technician that is assigned to the service.
      */
-    public function services(): HasMany
+    public function technician(): BelongsTo
     {
-        return $this->hasMany(Service::class);
+        return $this->belongsTo(User::class, 'technician_id');
     }
 }
