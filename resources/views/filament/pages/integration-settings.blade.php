@@ -25,16 +25,29 @@
                     <div class="space-y-6">
                         <div>
                             <x-filament::input.wrapper id="traccarApiConfig.enabled">
-                                <div class="flex items-center space-x-2">
-                                    <x-filament::input.checkbox id="traccarApiConfig.enabled" wire:model="traccarApiConfig.enabled" />
-                                    <label for="traccarApiConfig.enabled" class="text-sm font-medium text-gray-700 dark:text-gray-300">Ativado</label>
+                                <div class="flex items-center space-x-3 p-3 rounded-lg border-2 {{ $traccarApiConfig['enabled'] ? 'border-success-500 bg-success-50' : 'border-gray-300' }}">
+                                    <div class="flex-shrink-0">
+                                        <x-filament::input.checkbox 
+                                            id="traccarApiConfig.enabled" 
+                                            wire:model="traccarApiConfig.enabled"
+                                            class="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <label for="traccarApiConfig.enabled" class="block text-lg font-bold {{ $traccarApiConfig['enabled'] ? 'text-success-700' : 'text-gray-700' }}">
+                                            {{ $traccarApiConfig['enabled'] ? 'Integração Ativada' : 'Integração Desativada' }}
+                                        </label>
+                                        <p class="text-sm {{ $traccarApiConfig['enabled'] ? 'text-success-600' : 'text-gray-600' }}">
+                                            {{ $traccarApiConfig['enabled'] ? 'A sincronização automática está habilitada' : 'Clique para ativar a sincronização' }}
+                                        </p>
+                                    </div>
                                 </div>
                             </x-filament::input.wrapper>
                         </div>
                         
                         <div>
                             <x-filament::input.wrapper id="traccarApiConfig.url" label="URL da API">
-                                <x-filament::input id="traccarApiConfig.url" type="text" wire:model="traccarApiConfig.url" placeholder="http://traccar.example.com:8082/api" />
+                                <x-filament::input id="traccarApiConfig.url" type="text" wire:model="traccarApiConfig.url" placeholder="https://demo4.traccar.org/api" />
+                                <p class="mt-1 text-sm text-primary-600 font-medium">A URL deve terminar com "/api" (exemplo: https://demo4.traccar.org/api)</p>
                             </x-filament::input.wrapper>
                             @error('traccarApiConfig.url') <p class="mt-1 text-sm text-danger-500">{{ $message }}</p> @enderror
                         </div>
@@ -69,9 +82,21 @@
                     <div class="space-y-6">
                         <div>
                             <x-filament::input.wrapper id="traccarDatabaseConfig.enabled">
-                                <div class="flex items-center space-x-2">
-                                    <x-filament::input.checkbox id="traccarDatabaseConfig.enabled" wire:model="traccarDatabaseConfig.enabled" />
-                                    <label for="traccarDatabaseConfig.enabled" class="text-sm font-medium text-gray-700 dark:text-gray-300">Ativado</label>
+                                <div class="flex items-center space-x-3 p-3 rounded-lg border-2 {{ $traccarDatabaseConfig['enabled'] ? 'border-success-500 bg-success-50' : 'border-gray-300' }}">
+                                    <div class="flex-shrink-0">
+                                        <x-filament::input.checkbox 
+                                            id="traccarDatabaseConfig.enabled" 
+                                            wire:model="traccarDatabaseConfig.enabled"
+                                            class="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <label for="traccarDatabaseConfig.enabled" class="block text-lg font-bold {{ $traccarDatabaseConfig['enabled'] ? 'text-success-700' : 'text-gray-700' }}">
+                                            {{ $traccarDatabaseConfig['enabled'] ? 'Integração Ativada' : 'Integração Desativada' }}
+                                        </label>
+                                        <p class="text-sm {{ $traccarDatabaseConfig['enabled'] ? 'text-success-600' : 'text-gray-600' }}">
+                                            {{ $traccarDatabaseConfig['enabled'] ? 'A sincronização automática está habilitada' : 'Clique para ativar a sincronização' }}
+                                        </p>
+                                    </div>
                                 </div>
                             </x-filament::input.wrapper>
                         </div>
