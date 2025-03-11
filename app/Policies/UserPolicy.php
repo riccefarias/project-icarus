@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
@@ -40,7 +39,7 @@ class UserPolicy
         if ($user->id === $model->id) {
             return true;
         }
-        
+
         // Apenas administradores podem editar outros usuários
         return $user->hasPermissionTo('update users');
     }
@@ -54,7 +53,7 @@ class UserPolicy
         if ($user->id === $model->id) {
             return false;
         }
-        
+
         return $user->hasPermissionTo('delete users');
     }
 
@@ -75,7 +74,7 @@ class UserPolicy
         if ($user->id === $model->id) {
             return false;
         }
-        
+
         return $user->hasPermissionTo('delete users');
     }
 }

@@ -2,15 +2,13 @@
 
 namespace App\Filament\Resources\CustomerResource\RelationManagers;
 
-use App\Models\Vehicle;
 use App\Integrations\IntegrationsManager;
+use App\Models\Vehicle;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class VehiclesRelationManager extends RelationManager
 {
@@ -54,7 +52,7 @@ class VehiclesRelationManager extends RelationManager
                             ->default(true),
                     ])
                     ->columns(2),
-                
+
                 Forms\Components\Section::make('Informações do Rastreador')
                     ->schema([
                         Forms\Components\Select::make('equipment_id')
@@ -86,12 +84,12 @@ class VehiclesRelationManager extends RelationManager
                                                 'with_technician' => 'Com Técnico',
                                                 'with_customer' => 'Com Cliente',
                                                 'defective' => 'Com Defeito',
-                                                'maintenance' => 'Em Manutenção'
+                                                'maintenance' => 'Em Manutenção',
                                             ])
                                             ->default('with_customer')
                                             ->required(),
                                     ])->columns(2),
-                                
+
                                 Forms\Components\Section::make('Informações do SIM')
                                     ->schema([
                                         Forms\Components\TextInput::make('imei')
@@ -154,7 +152,7 @@ class VehiclesRelationManager extends RelationManager
                     ->after(function (Vehicle $record) {
                         $integrationsManager = app(IntegrationsManager::class);
                         $integrationsManager->loadIntegrations();
-                        
+
                         $activeIntegration = $integrationsManager->getActiveIntegration();
                         if ($activeIntegration && $activeIntegration->isEnabled()) {
                             $activeIntegration->syncVehicle($record);
@@ -167,7 +165,7 @@ class VehiclesRelationManager extends RelationManager
                         ->after(function (Vehicle $record) {
                             $integrationsManager = app(IntegrationsManager::class);
                             $integrationsManager->loadIntegrations();
-                            
+
                             $activeIntegration = $integrationsManager->getActiveIntegration();
                             if ($activeIntegration && $activeIntegration->isEnabled()) {
                                 $activeIntegration->syncVehicle($record);
@@ -180,24 +178,24 @@ class VehiclesRelationManager extends RelationManager
                         ->action(function (Vehicle $record) {
                             $integrationsManager = app(IntegrationsManager::class);
                             $integrationsManager->loadIntegrations();
-                            
+
                             $activeIntegration = $integrationsManager->getActiveIntegration();
                             if ($activeIntegration && $activeIntegration->isEnabled()) {
                                 $traccarId = $activeIntegration->syncVehicle($record);
-                                
+
                                 if ($traccarId) {
                                     return Tables\Actions\Action::makeModalMessage()
                                         ->success()
                                         ->title('Veículo sincronizado')
                                         ->body('O veículo foi sincronizado com sucesso com o Traccar.');
                                 }
-                                
+
                                 return Tables\Actions\Action::makeModalMessage()
                                     ->danger()
                                     ->title('Erro na sincronização')
                                     ->body('Não foi possível sincronizar o veículo com o Traccar. Verifique os logs para mais detalhes.');
                             }
-                            
+
                             return Tables\Actions\Action::makeModalMessage()
                                 ->danger()
                                 ->title('Nenhuma integração ativa')
@@ -220,12 +218,12 @@ class VehiclesRelationManager extends RelationManager
                         ->action(function ($records) {
                             $integrationsManager = app(IntegrationsManager::class);
                             $integrationsManager->loadIntegrations();
-                            
+
                             $activeIntegration = $integrationsManager->getActiveIntegration();
                             if ($activeIntegration && $activeIntegration->isEnabled()) {
                                 $successCount = 0;
                                 $failCount = 0;
-                                
+
                                 foreach ($records as $record) {
                                     $traccarId = $activeIntegration->syncVehicle($record);
                                     if ($traccarId) {
@@ -234,20 +232,20 @@ class VehiclesRelationManager extends RelationManager
                                         $failCount++;
                                     }
                                 }
-                                
+
                                 if ($failCount === 0) {
                                     return Tables\Actions\BulkAction::makeModalMessage()
                                         ->success()
                                         ->title('Veículos sincronizados')
                                         ->body("Todos os {$successCount} veículos foram sincronizados com sucesso.");
                                 }
-                                
+
                                 return Tables\Actions\BulkAction::makeModalMessage()
                                     ->warning()
                                     ->title('Sincronização parcial')
                                     ->body("{$successCount} veículos sincronizados com sucesso e {$failCount} falhas.");
                             }
-                            
+
                             return Tables\Actions\BulkAction::makeModalMessage()
                                 ->danger()
                                 ->title('Nenhuma integração ativa')

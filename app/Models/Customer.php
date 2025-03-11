@@ -43,20 +43,16 @@ class Customer extends Model
 
     /**
      * Get the vehicles associated with the customer.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function vehicles(): HasMany
     {
         return $this->hasMany(Vehicle::class);
     }
-    
+
     /**
      * Get the equipment assigned to this customer.
      * Each customer can access multiple equipment directly, in addition to
      * those assigned to their vehicles.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function equipment(): BelongsToMany
     {

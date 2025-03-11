@@ -10,8 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class EquipmentResource extends Resource
 {
@@ -20,13 +18,13 @@ class EquipmentResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-device-phone-mobile';
 
     protected static ?string $navigationGroup = 'Gestão';
-    
+
     protected static ?int $navigationSort = 3;
-    
+
     protected static ?string $navigationLabel = 'Equipamentos';
-    
+
     protected static ?string $modelLabel = 'Equipamento';
-    
+
     protected static ?string $pluralModelLabel = 'Equipamentos';
 
     public static function form(Form $form): Form
@@ -55,11 +53,11 @@ class EquipmentResource extends Resource
                                 'with_technician' => 'Com Técnico',
                                 'with_customer' => 'Com Cliente',
                                 'defective' => 'Com Defeito',
-                                'maintenance' => 'Em Manutenção'
+                                'maintenance' => 'Em Manutenção',
                             ])
                             ->required(),
                     ])->columns(2),
-                    
+
                 Forms\Components\Section::make('Informações do SIM')
                     ->schema([
                         Forms\Components\TextInput::make('imei')
@@ -78,8 +76,7 @@ class EquipmentResource extends Resource
                             ->label('Operadora')
                             ->maxLength(255),
                     ])->columns(3),
-                
-                
+
                 Forms\Components\Section::make('Observações')
                     ->schema([
                         Forms\Components\Textarea::make('notes')
@@ -110,7 +107,7 @@ class EquipmentResource extends Resource
                         'with_technician' => 'Com Técnico',
                         'with_customer' => 'Com Cliente',
                         'defective' => 'Com Defeito',
-                        'maintenance' => 'Em Manutenção'
+                        'maintenance' => 'Em Manutenção',
                     ])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('imei')
@@ -140,7 +137,7 @@ class EquipmentResource extends Resource
                         'with_technician' => 'Com Técnico',
                         'with_customer' => 'Com Cliente',
                         'defective' => 'Com Defeito',
-                        'maintenance' => 'Em Manutenção'
+                        'maintenance' => 'Em Manutenção',
                     ]),
             ])
             ->actions([

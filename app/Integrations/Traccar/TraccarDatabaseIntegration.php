@@ -48,7 +48,7 @@ class TraccarDatabaseIntegration extends TrackingIntegration
     {
         // Load configuration from settings if available
         $setting = \App\Models\Setting::where('key', 'traccar_database_integration')->first();
-        if ($setting && !empty($setting->value)) {
+        if ($setting && ! empty($setting->value)) {
             $config = json_decode($setting->value, true);
             if (is_array($config)) {
                 $this->config = array_merge($this->config, $config);
@@ -92,11 +92,11 @@ class TraccarDatabaseIntegration extends TrackingIntegration
      */
     public function validate(): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
-        if (empty($this->config['host']) || empty($this->config['database']) || 
+        if (empty($this->config['host']) || empty($this->config['database']) ||
             empty($this->config['username']) || empty($this->config['password'])) {
             return false;
         }
@@ -104,9 +104,11 @@ class TraccarDatabaseIntegration extends TrackingIntegration
         try {
             // Test the connection
             DB::connection('traccar')->select('SELECT 1');
+
             return true;
         } catch (Exception $e) {
-            Log::error("Traccar Database validation error: " . $e->getMessage());
+            Log::error('Traccar Database validation error: '.$e->getMessage());
+
             return false;
         }
     }
@@ -114,12 +116,11 @@ class TraccarDatabaseIntegration extends TrackingIntegration
     /**
      * Synchronize a customer with Traccar
      *
-     * @param Customer $customer
      * @return int|null Traccar user ID
      */
     public function syncCustomer(Customer $customer): ?int
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return null;
         }
 
@@ -133,22 +134,23 @@ class TraccarDatabaseIntegration extends TrackingIntegration
                         'email' => $customer->email,
                         'phone' => $customer->phone,
                     ]);
-                
+
                 return $customer->traccar_id;
             } else {
                 // Create new user in Traccar
-                $email = $customer->email ?: ($customer->id . '@placeholder.com');
-                
+                $email = $customer->email ?: ($customer->id.'@placeholder.com');
+
                 // Check if email already exists
                 $existingUser = DB::connection('traccar')->table('tc_users')
                     ->where('email', $email)
                     ->first();
-                
+
                 if ($existingUser) {
                     $customer->update(['traccar_id' => $existingUser->id]);
+
                     return $existingUser->id;
                 }
-                
+
                 $traccarUserId = DB::connection('traccar')->table('tc_users')->insertGetId([
                     'name' => $customer->name,
                     'email' => $email,
@@ -169,16 +171,18 @@ class TraccarDatabaseIntegration extends TrackingIntegration
                     'devicereadonly' => false,
                     'expiration' => null,
                 ]);
-                
+
                 if ($traccarUserId) {
                     $customer->update(['traccar_id' => $traccarUserId]);
+
                     return $traccarUserId;
                 }
-                
+
                 return null;
             }
         } catch (Exception $e) {
-            Log::error("Traccar Database error: " . $e->getMessage());
+            Log::error('Traccar Database error: '.$e->getMessage());
+
             return null;
         }
     }
@@ -186,18 +190,17 @@ class TraccarDatabaseIntegration extends TrackingIntegration
     /**
      * Synchronize a vehicle with Traccar
      *
-     * @param Vehicle $vehicle
      * @return int|null Traccar device ID
      */
     public function syncVehicle(Vehicle $vehicle): ?int
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return null;
         }
 
         try {
             // Ensure customer is synced first
-            if (!$vehicle->customer->traccar_id) {
+            if (! $vehicle->customer->traccar_id) {
                 $this->syncCustomer($vehicle->customer);
             }
 
@@ -207,32 +210,32 @@ class TraccarDatabaseIntegration extends TrackingIntegration
                     ->where('id', $vehicle->traccar_id)
                     ->update([
                         'name' => $vehicle->license_plate ?: $vehicle->model,
-                        'uniqueid' => $vehicle->device_id ?: 'temp_' . $vehicle->id,
+                        'uniqueid' => $vehicle->device_id ?: 'temp_'.$vehicle->id,
                         'phone' => $vehicle->phone_number,
                         'model' => $vehicle->model,
                         'contact' => $vehicle->customer->phone,
-                        'disabled' => !$vehicle->active,
+                        'disabled' => ! $vehicle->active,
                     ]);
-                
+
                 return $vehicle->traccar_id;
             } else {
                 // Create new device in Traccar
-                $deviceId = $vehicle->device_id ?: 'temp_' . $vehicle->id;
-                
+                $deviceId = $vehicle->device_id ?: 'temp_'.$vehicle->id;
+
                 // Check if device already exists
                 $existingDevice = DB::connection('traccar')->table('tc_devices')
                     ->where('uniqueid', $deviceId)
                     ->first();
-                
+
                 if ($existingDevice) {
                     $vehicle->update(['traccar_id' => $existingDevice->id]);
-                    
+
                     // Ensure the device is linked to the customer
                     $this->linkDeviceToUser($existingDevice->id, $vehicle->customer->traccar_id);
-                    
+
                     return $existingDevice->id;
                 }
-                
+
                 $traccarDeviceId = DB::connection('traccar')->table('tc_devices')->insertGetId([
                     'name' => $vehicle->license_plate ?: $vehicle->model,
                     'uniqueid' => $deviceId,
@@ -240,34 +243,36 @@ class TraccarDatabaseIntegration extends TrackingIntegration
                     'model' => $vehicle->model,
                     'contact' => $vehicle->customer->phone,
                     'category' => 'car',
-                    'disabled' => !$vehicle->active,
+                    'disabled' => ! $vehicle->active,
                     'lastupdate' => now(),
                 ]);
-                
+
                 if ($traccarDeviceId) {
                     $vehicle->update(['traccar_id' => $traccarDeviceId]);
-                    
+
                     // Link device to user in Traccar
                     $this->linkDeviceToUser($traccarDeviceId, $vehicle->customer->traccar_id);
-                    
+
                     return $traccarDeviceId;
                 }
-                
+
                 return null;
             }
         } catch (Exception $e) {
-            Log::error("Traccar Database error: " . $e->getMessage());
+            Log::error('Traccar Database error: '.$e->getMessage());
+
             return null;
         }
     }
 
     /**
      * Link a device to a user in Traccar
-     * 
-     * @param int $deviceId
-     * @param int $userId
+     *
+     * @param  int  $deviceId  Traccar device ID
+     * @param  int  $userId  Traccar user ID
+     * @return bool Success status
      */
-    private function linkDeviceToUser(int $deviceId, int $userId): void
+    public function linkDeviceToUser(int $deviceId, int $userId): bool
     {
         try {
             // Check if the permission already exists
@@ -275,15 +280,28 @@ class TraccarDatabaseIntegration extends TrackingIntegration
                 ->where('userid', $userId)
                 ->where('deviceid', $deviceId)
                 ->first();
-            
-            if (!$existingPermission) {
-                DB::connection('traccar')->table('tc_user_device')->insert([
+
+            if (! $existingPermission) {
+                $result = DB::connection('traccar')->table('tc_user_device')->insert([
                     'userid' => $userId,
                     'deviceid' => $deviceId,
                 ]);
+
+                if ($result) {
+                    Log::info("Linked device ID {$deviceId} to user ID {$userId} in Traccar DB");
+
+                    return true;
+                }
+
+                return false;
             }
+
+            // Already linked
+            return true;
         } catch (Exception $e) {
-            Log::error("Error linking device to user in Traccar: " . $e->getMessage());
+            Log::error('Error linking device to user in Traccar: '.$e->getMessage());
+
+            return false;
         }
     }
 
@@ -292,17 +310,17 @@ class TraccarDatabaseIntegration extends TrackingIntegration
      */
     public function syncAllFromTracking(): void
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return;
         }
 
         try {
             // Sync users
             $traccarUsers = DB::connection('traccar')->table('tc_users')->get();
-            
+
             foreach ($traccarUsers as $traccarUser) {
                 $customer = Customer::where('traccar_id', $traccarUser->id)->first();
-                if (!$customer) {
+                if (! $customer) {
                     // Create new customer
                     $customer = Customer::create([
                         'name' => $traccarUser->name,
@@ -315,15 +333,15 @@ class TraccarDatabaseIntegration extends TrackingIntegration
 
             // Sync devices
             $traccarDevices = DB::connection('traccar')->table('tc_devices')->get();
-            
+
             foreach ($traccarDevices as $traccarDevice) {
                 $vehicle = Vehicle::where('traccar_id', $traccarDevice->id)->first();
-                if (!$vehicle) {
+                if (! $vehicle) {
                     // Find customer for this device
                     $permission = DB::connection('traccar')->table('tc_user_device')
                         ->where('deviceid', $traccarDevice->id)
                         ->first();
-                    
+
                     if ($permission) {
                         $customer = Customer::where('traccar_id', $permission->userid)->first();
                         if ($customer) {
@@ -333,7 +351,7 @@ class TraccarDatabaseIntegration extends TrackingIntegration
                                 'model' => $traccarDevice->model ?? 'Unknown',
                                 'device_id' => $traccarDevice->uniqueid,
                                 'phone_number' => $traccarDevice->phone,
-                                'active' => !$traccarDevice->disabled,
+                                'active' => ! $traccarDevice->disabled,
                                 'traccar_id' => $traccarDevice->id,
                             ]);
                         }
@@ -341,19 +359,16 @@ class TraccarDatabaseIntegration extends TrackingIntegration
                 }
             }
         } catch (Exception $e) {
-            Log::error("Traccar Database error during full sync: " . $e->getMessage());
+            Log::error('Traccar Database error during full sync: '.$e->getMessage());
         }
     }
 
     /**
      * Get data for a specific vehicle from the tracking system
-     * 
-     * @param Vehicle $vehicle
-     * @return array|null
      */
     public function getVehicleData(Vehicle $vehicle): ?array
     {
-        if (!$this->enabled || !$vehicle->traccar_id) {
+        if (! $this->enabled || ! $vehicle->traccar_id) {
             return null;
         }
 
@@ -361,29 +376,28 @@ class TraccarDatabaseIntegration extends TrackingIntegration
             $device = DB::connection('traccar')->table('tc_devices')
                 ->where('id', $vehicle->traccar_id)
                 ->first();
-            
+
             if ($device) {
                 return (array) $device;
             }
-            
+
             return null;
         } catch (Exception $e) {
-            Log::error("Traccar Database error getting vehicle data: " . $e->getMessage());
+            Log::error('Traccar Database error getting vehicle data: '.$e->getMessage());
+
             return null;
         }
     }
 
     /**
      * Get positions for a specific vehicle from the tracking system
-     * 
-     * @param Vehicle $vehicle
-     * @param string $from ISO datetime 
-     * @param string $to ISO datetime
-     * @return array|null
+     *
+     * @param  string  $from  ISO datetime
+     * @param  string  $to  ISO datetime
      */
     public function getVehiclePositions(Vehicle $vehicle, string $from, string $to): ?array
     {
-        if (!$this->enabled || !$vehicle->traccar_id) {
+        if (! $this->enabled || ! $vehicle->traccar_id) {
             return null;
         }
 
@@ -394,16 +408,17 @@ class TraccarDatabaseIntegration extends TrackingIntegration
                 ->where('devicetime', '<=', $to)
                 ->orderBy('devicetime', 'asc')
                 ->get();
-            
+
             if ($positions) {
                 return $positions->map(function ($position) {
                     return (array) $position;
                 })->toArray();
             }
-            
+
             return null;
         } catch (Exception $e) {
-            Log::error("Traccar Database error getting vehicle positions: " . $e->getMessage());
+            Log::error('Traccar Database error getting vehicle positions: '.$e->getMessage());
+
             return null;
         }
     }

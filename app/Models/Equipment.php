@@ -45,7 +45,7 @@ class Equipment extends Model
     {
         return $this->belongsTo(Vehicle::class);
     }
-    
+
     /**
      * Get the vehicle that uses this equipment.
      * This is used for relationship management in Filament.
@@ -54,13 +54,10 @@ class Equipment extends Model
     {
         return $this->hasOne(Vehicle::class, 'equipment_id');
     }
-    
-    
+
     /**
      * Get the customers who have access to this equipment.
      * Multiple customers can access a single equipment for monitoring and management purposes.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function customers(): BelongsToMany
     {

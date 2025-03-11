@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // Sincronização com a plataforma Traccar a cada 30 minutos
-        $schedule->job(new SyncTraccarPlatform())->everyThirtyMinutes();
+        $schedule->job(new SyncTraccarPlatform)->everyThirtyMinutes();
     }
 
     /**

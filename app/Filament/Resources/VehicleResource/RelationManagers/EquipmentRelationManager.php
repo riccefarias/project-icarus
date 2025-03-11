@@ -38,11 +38,11 @@ class EquipmentRelationManager extends RelationManager
                                 'with_technician' => 'Com Técnico',
                                 'with_customer' => 'Com Cliente',
                                 'defective' => 'Com Defeito',
-                                'maintenance' => 'Em Manutenção'
+                                'maintenance' => 'Em Manutenção',
                             ])
                             ->required(),
                     ])->columns(2),
-                    
+
                 Forms\Components\Section::make('Informações do SIM')
                     ->schema([
                         Forms\Components\TextInput::make('imei')
@@ -57,7 +57,7 @@ class EquipmentRelationManager extends RelationManager
                             ->label('Operadora')
                             ->maxLength(255),
                     ])->columns(3),
-                
+
                 Forms\Components\Section::make('Observações')
                     ->schema([
                         Forms\Components\Textarea::make('notes')
@@ -89,7 +89,7 @@ class EquipmentRelationManager extends RelationManager
                         'with_technician' => 'Com Técnico',
                         'with_customer' => 'Com Cliente',
                         'defective' => 'Com Defeito',
-                        'maintenance' => 'Em Manutenção'
+                        'maintenance' => 'Em Manutenção',
                     ])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('imei')

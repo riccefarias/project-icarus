@@ -4,30 +4,28 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
-use App\Models\Customer;
 use App\Integrations\IntegrationsManager;
+use App\Models\Customer;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
-    
+
     protected static ?string $navigationLabel = 'Clientes';
-    
+
     protected static ?string $modelLabel = 'Cliente';
-    
+
     protected static ?string $pluralModelLabel = 'Clientes';
-    
+
     protected static ?string $navigationGroup = 'Gestão';
-    
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -56,7 +54,7 @@ class CustomerResource extends Resource
                             ->default(true),
                     ])
                     ->columns(2),
-                
+
                 Forms\Components\Section::make('Endereço')
                     ->schema([
                         Forms\Components\Textarea::make('address')
@@ -74,7 +72,7 @@ class CustomerResource extends Resource
                             ->maxLength(255),
                     ])
                     ->columns(2),
-                
+
                 Forms\Components\Section::make('Informações Adicionais')
                     ->schema([
                         Forms\Components\TextInput::make('contact_person')
@@ -141,24 +139,24 @@ class CustomerResource extends Resource
                         ->action(function (Customer $record) {
                             $integrationsManager = app(IntegrationsManager::class);
                             $integrationsManager->loadIntegrations();
-                            
+
                             $activeIntegration = $integrationsManager->getActiveIntegration();
                             if ($activeIntegration && $activeIntegration->isEnabled()) {
                                 $traccarId = $activeIntegration->syncCustomer($record);
-                                
+
                                 if ($traccarId) {
                                     return Tables\Actions\Action::makeModalMessage()
                                         ->success()
                                         ->title('Cliente sincronizado')
                                         ->body('O cliente foi sincronizado com sucesso com o Traccar.');
                                 }
-                                
+
                                 return Tables\Actions\Action::makeModalMessage()
                                     ->danger()
                                     ->title('Erro na sincronização')
                                     ->body('Não foi possível sincronizar o cliente com o Traccar. Verifique os logs para mais detalhes.');
                             }
-                            
+
                             return Tables\Actions\Action::makeModalMessage()
                                 ->danger()
                                 ->title('Nenhuma integração ativa')
@@ -181,12 +179,12 @@ class CustomerResource extends Resource
                         ->action(function ($records) {
                             $integrationsManager = app(IntegrationsManager::class);
                             $integrationsManager->loadIntegrations();
-                            
+
                             $activeIntegration = $integrationsManager->getActiveIntegration();
                             if ($activeIntegration && $activeIntegration->isEnabled()) {
                                 $successCount = 0;
                                 $failCount = 0;
-                                
+
                                 foreach ($records as $record) {
                                     $traccarId = $activeIntegration->syncCustomer($record);
                                     if ($traccarId) {
@@ -195,20 +193,20 @@ class CustomerResource extends Resource
                                         $failCount++;
                                     }
                                 }
-                                
+
                                 if ($failCount === 0) {
                                     return Tables\Actions\BulkAction::makeModalMessage()
                                         ->success()
                                         ->title('Clientes sincronizados')
                                         ->body("Todos os {$successCount} clientes foram sincronizados com sucesso.");
                                 }
-                                
+
                                 return Tables\Actions\BulkAction::makeModalMessage()
                                     ->warning()
                                     ->title('Sincronização parcial')
                                     ->body("{$successCount} clientes sincronizados com sucesso e {$failCount} falhas.");
                             }
-                            
+
                             return Tables\Actions\BulkAction::makeModalMessage()
                                 ->danger()
                                 ->title('Nenhuma integração ativa')

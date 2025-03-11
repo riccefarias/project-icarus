@@ -7,17 +7,15 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class EquipmentRelationManager extends RelationManager
 {
     protected static string $relationship = 'equipment';
-    
+
     protected static ?string $title = 'Equipamentos';
-    
+
     protected static ?string $modelLabel = 'Equipamento';
-    
+
     protected static ?string $pluralModelLabel = 'Equipamentos';
 
     public function form(Form $form): Form
@@ -50,7 +48,7 @@ class EquipmentRelationManager extends RelationManager
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
-                    ->formatStateUsing(fn (string $state): string => match($state) {
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'in_stock' => 'Em Estoque',
                         'with_technician' => 'Com Técnico',
                         'with_customer' => 'Com Cliente',
@@ -59,7 +57,7 @@ class EquipmentRelationManager extends RelationManager
                         default => $state,
                     })
                     ->badge()
-                    ->color(fn (string $state): string => match($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'defective' => 'danger',
                         'maintenance' => 'warning',
                         'in_stock' => 'success',
@@ -78,7 +76,7 @@ class EquipmentRelationManager extends RelationManager
                         'with_technician' => 'Com Técnico',
                         'with_customer' => 'Com Cliente',
                         'defective' => 'Com Defeito',
-                        'maintenance' => 'Em Manutenção'
+                        'maintenance' => 'Em Manutenção',
                     ]),
             ])
             ->headerActions([

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('equipment_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-            
+
             // Ensure each user-equipment combination is unique
             $table->unique(['user_id', 'equipment_id']);
         });

@@ -7,8 +7,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class VehiclesRelationManager extends RelationManager
 {
@@ -24,7 +22,7 @@ class VehiclesRelationManager extends RelationManager
                     ->required()
                     ->searchable()
                     ->preload(),
-                    
+
                 Forms\Components\Section::make('Informações do Veículo')
                     ->schema([
                         Forms\Components\TextInput::make('license_plate')
@@ -51,7 +49,7 @@ class VehiclesRelationManager extends RelationManager
                             ->default(true),
                     ])
                     ->columns(2),
-                
+
                 Forms\Components\Section::make('Observações')
                     ->schema([
                         Forms\Components\Textarea::make('notes')

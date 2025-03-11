@@ -104,7 +104,6 @@ abstract class TrackingIntegration
     /**
      * Synchronize a customer with the tracking system
      *
-     * @param Customer $customer
      * @return int|null Tracking system user ID
      */
     abstract public function syncCustomer(Customer $customer): ?int;
@@ -112,10 +111,18 @@ abstract class TrackingIntegration
     /**
      * Synchronize a vehicle with the tracking system
      *
-     * @param Vehicle $vehicle
      * @return int|null Tracking system device ID
      */
     abstract public function syncVehicle(Vehicle $vehicle): ?int;
+
+    /**
+     * Link a device to a user in the tracking system
+     *
+     * @param  int  $deviceId  Tracking system device ID
+     * @param  int  $userId  Tracking system user ID
+     * @return bool Success status
+     */
+    abstract public function linkDeviceToUser(int $deviceId, int $userId): bool;
 
     /**
      * Fetch all devices from the tracking system and sync with our database
@@ -124,19 +131,14 @@ abstract class TrackingIntegration
 
     /**
      * Get data for a specific vehicle from the tracking system
-     * 
-     * @param Vehicle $vehicle
-     * @return array|null
      */
     abstract public function getVehicleData(Vehicle $vehicle): ?array;
 
     /**
      * Get positions for a specific vehicle from the tracking system
-     * 
-     * @param Vehicle $vehicle
-     * @param string $from ISO datetime 
-     * @param string $to ISO datetime
-     * @return array|null
+     *
+     * @param  string  $from  ISO datetime
+     * @param  string  $to  ISO datetime
      */
     abstract public function getVehiclePositions(Vehicle $vehicle, string $from, string $to): ?array;
 

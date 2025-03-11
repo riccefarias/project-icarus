@@ -22,23 +22,20 @@ class Setting extends Model
     /**
      * Get a setting value by key.
      *
-     * @param string $key
-     * @param mixed $default
+     * @param  mixed  $default
      * @return mixed
      */
     public static function getValue(string $key, $default = null)
     {
         $setting = self::where('key', $key)->first();
-        
+
         return $setting ? $setting->value : $default;
     }
 
     /**
      * Set a setting value by key.
      *
-     * @param string $key
-     * @param mixed $value
-     * @return Setting
+     * @param  mixed  $value
      */
     public static function setValue(string $key, $value): Setting
     {

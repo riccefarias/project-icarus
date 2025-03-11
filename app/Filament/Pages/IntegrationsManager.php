@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use App\Integrations\IntegrationsManager as IntegrationsManagerService;
 use App\Models\Setting;
-use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 
 class IntegrationsManager extends Page
@@ -12,13 +11,13 @@ class IntegrationsManager extends Page
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
 
     protected static string $view = 'filament.pages.integrations-manager';
-    
+
     protected static ?string $navigationLabel = 'Integrações';
-    
+
     protected static ?string $title = 'Gerenciador de Integrações';
-    
+
     protected static ?string $navigationGroup = 'Configurações';
-    
+
     protected static ?int $navigationSort = 1;
 
     /**
@@ -73,7 +72,7 @@ class IntegrationsManager extends Page
 
         // Load Traccar Database configuration
         $setting = Setting::where('key', 'traccar_database_integration')->first();
-        if ($setting && !empty($setting->value)) {
+        if ($setting && ! empty($setting->value)) {
             $this->traccarDatabaseConfig = json_decode($setting->value, true);
         }
     }
@@ -98,7 +97,7 @@ class IntegrationsManager extends Page
                         'enabled' => $this->traccarDatabaseConfig['enabled'] ?? false,
                         'configForm' => 'traccarDatabaseConfigForm',
                     ],
-                ]
+                ],
             ],
             // Adicione outras categorias conforme necessário
             /*
@@ -139,7 +138,7 @@ class IntegrationsManager extends Page
                 $oldLine = substr($str, $keyPosition, $endOfLinePosition - $keyPosition);
 
                 // If key does not exist, add it
-                if (!$keyPosition || !$endOfLinePosition || !$oldLine) {
+                if (! $keyPosition || ! $endOfLinePosition || ! $oldLine) {
                     $str .= "{$envKey}={$envValue}\n";
                 } else {
                     $str = str_replace($oldLine, "{$envKey}={$envValue}", $str);
