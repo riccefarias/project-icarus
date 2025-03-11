@@ -13,6 +13,18 @@ class EditEquipment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('qrcode')
+                ->label('QR Code')
+                ->icon('heroicon-o-qr-code')
+                ->url(fn () => route('equipment.qrcode', $this->record))
+                ->openUrlInNewTab(),
+            Actions\Action::make('showQrCode')
+                ->label('Ver QR Code')
+                ->icon('heroicon-o-eye')
+                ->modalHeading(fn (): string => "QR Code: {$this->record->serial_number}")
+                ->modalContent(fn (): string => view('equipment.qr-modal', ['equipment' => $this->record])->render())
+                ->modalSubmitAction(false)
+                ->modalCancelAction(false),
             Actions\DeleteAction::make(),
         ];
     }

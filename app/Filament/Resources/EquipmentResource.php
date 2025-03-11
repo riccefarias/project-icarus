@@ -142,6 +142,19 @@ class EquipmentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('qrcode')
+                    ->label('QR Code')
+                    ->icon('heroicon-o-qr-code')
+                    ->color('success')
+                    ->url(fn (Equipment $record): string => route('equipment.qrcode', $record))
+                    ->openUrlInNewTab(),
+                Tables\Actions\Action::make('showQrCode')
+                    ->label('Ver QR Code')
+                    ->icon('heroicon-o-eye')
+                    ->modalHeading(fn (Equipment $record): string => "QR Code: {$record->serial_number}")
+                    ->modalContent(fn (Equipment $record): string => view('equipment.qr-modal', ['equipment' => $record])->render())
+                    ->modalSubmitAction(false)
+                    ->modalCancelAction(false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

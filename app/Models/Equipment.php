@@ -119,4 +119,28 @@ class Equipment extends Model
 
         return $statusMap[$this->status] ?? $this->status;
     }
+    
+    /**
+     * Gera um QR code para o equipamento
+     * 
+     * @param int $size Tamanho do QR code em pixels
+     * @return string
+     */
+    public function getQrCode(int $size = 200): string
+    {
+        // Gerando URL para página de detalhes do equipamento
+        $url = route('equipment.show', $this->id);
+        
+        // Gerando QR code
+        return \SimpleSoftwareIO\QrCode\Facades\QrCode::size($size)
+            ->generate($url);
+    }
+    
+    /**
+     * Retorna a URL para visualização de detalhes do equipamento
+     */
+    public function getShowUrlAttribute(): string
+    {
+        return route('equipment.show', $this->id);
+    }
 }
