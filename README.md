@@ -67,8 +67,8 @@ O sistema possui integração nativa com o [Traccar](https://www.traccar.org/), 
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/icarus.git
-cd icarus
+git clone https://github.com/riccefarias/project-icarus.git
+cd project-icarus
 ```
 
 ### 2. Instale as dependências
@@ -114,8 +114,74 @@ npm run build
 php artisan serve
 ```
 
-Acesse o sistema em: http://localhost:8000
-Usuario Padrão: admin@example.com / admin
+Acesse o sistema em: http://localhost:8000  
+Usuário Padrão: admin@example.com  
+Senha: admin
+
+### 8. Configuração do Worker com Supervisor
+
+Para garantir que as tarefas em background (como sincronização com Traccar) sejam processadas corretamente, configure o Supervisor:
+
+1. Instale o Supervisor:
+
+```bash
+sudo apt-get install supervisor
+```
+
+2. Crie um arquivo de configuração para o Icarus:
+
+```bash
+sudo nano /etc/supervisor/conf.d/icarus-worker.conf
+```
+
+3. Adicione a seguinte configuração:
+
+```
+[program:icarus-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /caminho/para/seu/projeto/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs=2
+redirect_stderr=true
+stdout_logfile=/caminho/para/seu/projeto/storage/logs/worker.log
+stopwaitsecs=3600
+```
+
+4. Atualize o caminho `/caminho/para/seu/projeto/` para o diretório real da sua instalação.
+
+5. Recarregue e inicie o Supervisor:
+
+```bash
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start icarus-worker:*
+```
+
+6. Verifique o status dos workers:
+
+```bash
+sudo supervisorctl status
+```
+
+### Alternativa: Iniciar o Worker Manualmente
+
+Se preferir não usar o Supervisor, você pode iniciar o worker manualmente (ideal para ambiente de desenvolvimento):
+
+```bash
+php artisan queue:work --sleep=3 --tries=3
+```
+
+Para manter o worker rodando em segundo plano:
+
+```bash
+nohup php artisan queue:work --sleep=3 --tries=3 > storage/logs/worker.log 2>&1 &
+```
+
+Nota: Este método não oferece o mesmo nível de confiabilidade que o Supervisor para ambientes de produção.
 
 ## 🔧 Configuração do Traccar
 
