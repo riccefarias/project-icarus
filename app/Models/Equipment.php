@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -71,5 +72,51 @@ class Equipment extends Model
     public function services(): HasMany
     {
         return $this->hasMany(Service::class);
+    }
+
+    /**
+     * Get the history entries for this equipment.
+     */
+    public function history(): HasMany
+    {
+        return $this->hasMany(EquipmentHistory::class);
+    }
+
+    /**
+     * Boot method para registrar os eventos do modelo
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Captura o evento de atualização
+        static::updating(function ($equipment) {
+            // Se o status foi alterado, registra no histórico
+            if ($equipment->isDirty('status')) {
+                EquipmentHistory::create([
+                    'equipment_id' => $equipment->id,
+                    'user_id' => Auth::id(),
+                    'previous_status' => $equipment->getOriginal('status'),
+                    'new_status' => $equipment->status,
+                    'notes' => null, // Para notas manuais, precisaríamos implementar um campo no form
+                ]);
+            }
+        });
+    }
+
+    /**
+     * Retorna o nome amigável do status
+     */
+    public function getStatusNameAttribute(): string
+    {
+        $statusMap = [
+            'in_stock' => 'Em Estoque',
+            'with_technician' => 'Com Técnico',
+            'with_customer' => 'Com Cliente',
+            'defective' => 'Com Defeito',
+            'maintenance' => 'Em Manutenção',
+        ];
+
+        return $statusMap[$this->status] ?? $this->status;
     }
 }

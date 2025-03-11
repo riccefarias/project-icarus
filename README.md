@@ -24,16 +24,21 @@ Icarus é uma plataforma moderna e completa para gestão de frotas e rastreament
 - Cadastro completo com dados de contato e documentação
 - Visualização centralizada de veículos e serviços
 - Controle de contratos e assinaturas
+- Sincronização bidirecional com Traccar
 
 🚗 **Gestão de Veículos**
 - Cadastro detalhado com informações técnicas
 - Vinculação automatizada com dispositivos de rastreamento
 - Histórico de serviços e manutenções
+- Sincronização bidirecional com Traccar
+- Sincronização de pivotagem com Cliente no Traccar
 
 📡 **Gestão de Equipamentos**
 - Controle de estoque e movimentação
 - Rastreamento de status (Em estoque, Com cliente, Em manutenção)
 - Integração com dispositivos via IMEI/ID
+- Histórico completo de mudanças de status
+- Sincronização bidirecional com Traccar
 
 🔧 **Operações e Serviços**
 - Agendamento de instalações e manutenções
@@ -215,6 +220,8 @@ O desenvolvimento do Icarus está organizado nas seguintes fases:
 - [x] Gestão de Veículos
 - [x] Integração básica com Traccar
 - [x] Gestão de Equipamentos
+- [x] Sincronização de pivotagem de Dispositivo com o Cliente
+- [x] Histórico de movimentação de Equipamentos
 
 ### Fase 2 (Operações) 🔄
 - [ ] Gestão de Serviços
