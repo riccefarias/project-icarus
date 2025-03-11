@@ -22,7 +22,7 @@ class EditEquipment extends EditRecord
                 ->label('Ver QR Code')
                 ->icon('heroicon-o-eye')
                 ->modalHeading(fn (): string => "QR Code: {$this->record->serial_number}")
-                ->modalContent(fn (): string => view('equipment.qr-modal', ['equipment' => $this->record])->render())
+                ->modalContent(fn () => view('equipment.qr-modal', ['equipment' => $this->record]))
                 ->modalSubmitAction(false)
                 ->modalCancelAction(false),
             Actions\DeleteAction::make(),

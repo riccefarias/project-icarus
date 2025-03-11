@@ -152,7 +152,7 @@ class EquipmentResource extends Resource
                     ->label('Ver QR Code')
                     ->icon('heroicon-o-eye')
                     ->modalHeading(fn (Equipment $record): string => "QR Code: {$record->serial_number}")
-                    ->modalContent(fn (Equipment $record): string => view('equipment.qr-modal', ['equipment' => $record])->render())
+                    ->modalContent(fn (Equipment $record) => view('equipment.qr-modal', ['equipment' => $record]))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false),
             ])
